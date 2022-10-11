@@ -1,21 +1,32 @@
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import "./App.css";
 import CardList from "./components/card-list/card-list.component";
 import SearchBox from "./components/search-box/search-box.component";
+import { getData } from "./utils/data.utils";
 
+export type Monster =  {
+  id: string;
+  name: string;
+  email: string;
+}
 
 const App = () => {
   
   const [searchField, setSearchField] = useState(''); // useState trả lại cho ta mảng gồm 2 giá trị
   // [value, setValue] : giá trị đầu tiên sẽ là giá trị chúng ta muốn lưu trữ và giá trị thứ hai sẽ là một tập hợp (a set) hoặc hàm (function)
-  const [monsters, setMonsters] = useState([]);
+  const [monsters, setMonsters] = useState<Monster[]>([]);
   const [filteredMonsters, setFilterMonsters] = useState(monsters);
-  console.log('render')
+  // console.log('render')
 
   useEffect(() => {
-    fetch('https://jsonplaceholder.typicode.com/users')
-      .then(res => res.json())
-      .then(users => setMonsters(users));
+    // fetch('https://jsonplaceholder.typicode.com/users')
+    //   .then(res => res.json())
+    //   .then(users => setMonsters(users));
+    const fetchUser = async () => {
+      const users = await getData<Monster[]>('https://jsonplaceholder.typicode.com/users');
+      setMonsters(users);
+    }
+    fetchUser();
   }, []);
 
   useEffect(() =>{
@@ -26,7 +37,7 @@ const App = () => {
     console.log('effect is firing')
   }, [monsters, searchField])
 
-  const onSearchChange = (event) => {
+  const onSearchChange = (event: ChangeEvent<HTMLInputElement>): void => {
     const searchFieldString = event.target.value.toLocaleLowerCase();
     setSearchField(searchFieldString);
   };
